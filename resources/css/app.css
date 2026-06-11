@@ -1,0 +1,632 @@
+@import "tailwindcss";
+
+
+/* ────────────────────────────────────────────────────────────
+   ZERO NINE COFFEE SHOP — Design System
+   Contrast Mix: Cream Body + Dark Nav Theme
+──────────────────────────────────────────────────────────── */
+
+@theme {
+    /* ── Brand Color Palette ── */
+    --color-coffee-950: #1B120D;
+    --color-coffee-900: #2E1C12;
+    --color-coffee-800: #3E2723;
+    --color-coffee-700: #4E342E;
+    --color-coffee-600: #6F4E37;
+    --color-coffee-500: #8D6E63;
+    --color-coffee-400: #A1887F;
+    --color-coffee-300: #BCAAA4;
+    --color-coffee-200: #D7CCC8;
+    --color-coffee-100: #EFEBE9;
+    --color-coffee-50: #FFF8F0;
+
+    /* ── Gold Accent ── */
+    --color-gold-600: #9A7D3A;
+    --color-gold-500: #C5A880;
+    --color-gold-400: #D4BC8E;
+    --color-gold-300: #E8D5B0;
+    --color-gold-200: #F0E4C8;
+
+    /* ── Semantic ── */
+    --color-primary: #C5A880;
+    --color-primary-dark: #9A7D3A;
+    --color-background: #FDF6EC;
+    --color-surface: #F5ECD7;
+    --color-surface-elevated: #FFFFFF;
+    --color-text-primary: #1B120D;
+    --color-text-secondary: #3E2C1C;
+    --color-text-muted: #6F4E37;
+
+    /* ── Typography ── */
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* ── Radius ── */
+    --radius-card: 1rem;
+    --radius-button: 0.625rem;
+}
+
+/* ────────────────────────────────────────────────────────────
+   Base Styles
+──────────────────────────────────────────────────────────── */
+
+@layer base {
+    :root {
+        color-scheme: light;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+        background-color: #FDF6EC;
+        color: #1B120D;
+        font-family: 'Inter', system-ui, sans-serif;
+        min-height: 100vh;
+    }
+
+    h1,
+    h2,
+    h3 {
+        font-family: 'Playfair Display', Georgia, serif;
+    }
+
+    ::selection {
+        background-color: #C5A880;
+        color: #1B120D;
+    }
+
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #F5ECD7;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #C5A880;
+        border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #9A7D3A;
+    }
+}
+
+/* ────────────────────────────────────────────────────────────
+   Component Classes
+──────────────────────────────────────────────────────────── */
+
+@layer components {
+
+    /* ── Glass Card (Light Theme) ── */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(197, 168, 128, 0.3);
+        border-radius: 1rem;
+        box-shadow:
+            0 4px 6px -1px rgba(139, 99, 64, 0.06),
+            0 2px 4px -1px rgba(139, 99, 64, 0.04);
+    }
+
+    .glass-card-dark {
+        background: rgba(245, 236, 215, 0.85);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(197, 168, 128, 0.4);
+        border-radius: 1rem;
+        box-shadow:
+            0 4px 6px -1px rgba(139, 99, 64, 0.06),
+            0 2px 4px -1px rgba(139, 99, 64, 0.04);
+    }
+
+    /* ── Buttons ── */
+    .btn-primary {
+        background: linear-gradient(135deg, #C5A880 0%, #9A7D3A 100%);
+        color: #1B120D;
+        font-weight: 700;
+        padding: 0.75rem 1.75rem;
+        border-radius: 0.625rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: 'Inter', sans-serif;
+        letter-spacing: 0.025em;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, #D4BC8E 0%, #C5A880 100%);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .btn-primary:hover::before {
+        opacity: 1;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(197, 168, 128, 0.35);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+
+    .btn-secondary {
+        background: transparent;
+        color: #8B6340;
+        border: 1px solid rgba(139, 99, 64, 0.35);
+        font-weight: 600;
+        padding: 0.75rem 1.75rem;
+        border-radius: 0.625rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-secondary:hover {
+        background: rgba(197, 168, 128, 0.12);
+        border-color: #C5A880;
+        transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+        background: rgba(197, 168, 128, 0.1);
+        color: #3E2C1C;
+        border: 1px solid rgba(197, 168, 128, 0.25);
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.25s;
+    }
+
+    .btn-ghost:hover {
+        background: rgba(197, 168, 128, 0.18);
+        color: #1B120D;
+    }
+
+    .btn-danger {
+        background: rgba(239, 68, 68, 0.08);
+        color: #B91C1C;
+        border: 1px solid rgba(239, 68, 68, 0.25);
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.25s;
+    }
+
+    .btn-danger:hover {
+        background: rgba(239, 68, 68, 0.14);
+    }
+
+    /* ── Form Controls ── */
+    .form-input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(197, 168, 128, 0.4);
+        border-radius: 0.625rem;
+        color: #1B120D;
+        padding: 0.75rem 1rem;
+        font-size: 0.9375rem;
+        transition: all 0.25s;
+        outline: none;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .form-input::placeholder {
+        color: #A1887F;
+    }
+
+    .form-input:focus {
+        border-color: #C5A880;
+        background: #FFFFFF;
+        box-shadow: 0 0 0 3px rgba(197, 168, 128, 0.2);
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #3E2C1C;
+        margin-bottom: 0.5rem;
+    }
+
+    /* ── Menu Card ── */
+    .menu-card {
+        background: #FFFFFF;
+        border: 1px solid rgba(197, 168, 128, 0.25);
+        border-radius: 1rem;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        position: relative;
+    }
+
+    .menu-card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(197, 168, 128, 0.45);
+        box-shadow: 0 20px 48px rgba(139, 99, 64, 0.1), 0 0 0 1px rgba(197, 168, 128, 0.15);
+    }
+
+    .menu-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(197, 168, 128, 0.05) 0%, transparent 60%);
+        opacity: 0;
+        transition: opacity 0.4s;
+        pointer-events: none;
+    }
+
+    .menu-card:hover::after {
+        opacity: 1;
+    }
+
+    /* ── Status Badges — tuned for LIGHT (cream) backgrounds ── */
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.025em;
+    }
+
+    /* Yellow → amber on cream */
+    .badge-yellow {
+        background: rgba(180, 130, 0, 0.1);
+        color: #92650A;
+        border: 1px solid rgba(180, 130, 0, 0.25);
+    }
+
+    /* Blue → navy on cream */
+    .badge-blue {
+        background: rgba(37, 99, 235, 0.1);
+        color: #1D4ED8;
+        border: 1px solid rgba(37, 99, 235, 0.2);
+    }
+
+    /* Orange → deep orange */
+    .badge-orange {
+        background: rgba(194, 65, 12, 0.1);
+        color: #C2410C;
+        border: 1px solid rgba(194, 65, 12, 0.2);
+    }
+
+    /* Green → forest green */
+    .badge-green {
+        background: rgba(21, 128, 61, 0.1);
+        color: #15803D;
+        border: 1px solid rgba(21, 128, 61, 0.2);
+    }
+
+    /* Red → crimson */
+    .badge-red {
+        background: rgba(185, 28, 28, 0.1);
+        color: #B91C1C;
+        border: 1px solid rgba(185, 28, 28, 0.2);
+    }
+
+    /* Purple → deep violet */
+    .badge-purple {
+        background: rgba(109, 40, 217, 0.1);
+        color: #6D28D9;
+        border: 1px solid rgba(109, 40, 217, 0.2);
+    }
+
+    /* Gray → charcoal */
+    .badge-gray {
+        background: rgba(75, 85, 99, 0.1);
+        color: #4B5563;
+        border: 1px solid rgba(75, 85, 99, 0.2);
+    }
+
+    /* Gold — unchanged, works on cream too */
+    .badge-gold {
+        background: rgba(197, 168, 128, 0.15);
+        color: #8B6340;
+        border: 1px solid rgba(197, 168, 128, 0.3);
+    }
+
+    /* ── Admin Sidebar — keeps dark bg, light text ── */
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border-radius: 0.625rem;
+        color: #BCAAA4;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.25s;
+        text-decoration: none;
+    }
+
+    .sidebar-link:hover {
+        background: rgba(197, 168, 128, 0.15);
+        color: #FDF6EC;
+    }
+
+    .sidebar-link.active {
+        background: rgba(197, 168, 128, 0.2);
+        color: #C5A880;
+        border-left: 3px solid #C5A880;
+    }
+
+    /* ── Stats Card ── */
+    .stat-card {
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(197, 168, 128, 0.25);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        transition: all 0.3s;
+        box-shadow:
+            0 4px 6px -1px rgba(139, 99, 64, 0.06),
+            0 2px 4px -1px rgba(139, 99, 64, 0.04);
+    }
+
+    .stat-card:hover {
+        border-color: rgba(197, 168, 128, 0.45);
+        box-shadow: 0 8px 24px rgba(139, 99, 64, 0.1);
+        transform: translateY(-2px);
+    }
+
+    /* ── Table styles ── */
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table th {
+        background: rgba(245, 236, 215, 0.9);
+        color: #6F4E37;
+        padding: 0.875rem 1rem;
+        text-align: left;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        border-bottom: 1px solid rgba(197, 168, 128, 0.3);
+    }
+
+    .data-table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(197, 168, 128, 0.15);
+        color: #3E2C1C;
+        font-size: 0.9375rem;
+    }
+
+    .data-table tr:hover td {
+        background: rgba(245, 236, 215, 0.5);
+    }
+
+    /* ── Gold gradient text ── */
+    .text-gradient-gold {
+        background: linear-gradient(135deg, #9A7D3A 0%, #C5A880 50%, #9A7D3A 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* ── Section divider ── */
+    .section-divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(197, 168, 128, 0.35), transparent);
+        margin: 3rem 0;
+    }
+
+    /* ── Notification badge ── */
+    .notif-dot {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        width: 10px;
+        height: 10px;
+        background: #EF4444;
+        border-radius: 50%;
+        border: 2px solid #FDF6EC;
+        /* matches cream body */
+        animation: pulse 2s infinite;
+    }
+
+    /* ── Live indicator ── */
+    .live-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #15803D;
+        /* dark green, readable on cream */
+        letter-spacing: 0.05em;
+    }
+
+    .live-indicator::before {
+        content: '';
+        width: 8px;
+        height: 8px;
+        background: #16A34A;
+        border-radius: 50%;
+        animation: pulse 1.5s infinite;
+    }
+
+    /* ── Loyalty tier badges ── */
+    .tier-bronze {
+        color: #92400E;
+        border-color: rgba(146, 64, 14, 0.3);
+    }
+
+    .tier-silver {
+        color: #475569;
+        border-color: rgba(71, 85, 105, 0.3);
+    }
+
+    .tier-gold {
+        color: #92650A;
+        border-color: rgba(146, 101, 10, 0.3);
+    }
+
+    .tier-platinum {
+        color: #334155;
+        border-color: rgba(51, 65, 85, 0.3);
+    }
+
+    /* ── Kitchen Order Card — inverted to cream theme ── */
+    .kitchen-card {
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(197, 168, 128, 0.25);
+        border-radius: 1rem;
+        padding: 1.25rem;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+        color: #1B120D;
+    }
+
+    .kitchen-card.processing {
+        border-color: rgba(194, 65, 12, 0.35);
+        box-shadow: 0 0 20px rgba(194, 65, 12, 0.08);
+        background: rgba(255, 247, 237, 0.9);
+    }
+
+    .kitchen-card.ready {
+        border-color: rgba(21, 128, 61, 0.35);
+        box-shadow: 0 0 20px rgba(21, 128, 61, 0.08);
+        background: rgba(240, 253, 244, 0.9);
+    }
+}
+
+/* ────────────────────────────────────────────────────────────
+   Animations & Keyframes
+──────────────────────────────────────────────────────────── */
+
+@layer utilities {
+    @keyframes pulse {
+
+        0%,
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        50% {
+            opacity: 0.6;
+            transform: scale(1.1);
+        }
+    }
+
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-8px);
+        }
+    }
+
+    @keyframes shimmer {
+        0% {
+            background-position: -200% center;
+        }
+
+        100% {
+            background-position: 200% center;
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes rotateSlow {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .animate-float {
+        animation: float 4s ease-in-out infinite;
+    }
+
+    .animate-float-delay {
+        animation: float 4s ease-in-out 1s infinite;
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.7s ease-out forwards;
+    }
+
+    .animate-slide-left {
+        animation: slideInLeft 0.7s ease-out forwards;
+    }
+
+    .animate-rotate-slow {
+        animation: rotateSlow 20s linear infinite;
+    }
+
+    .shimmer-effect {
+        background: linear-gradient(90deg,
+                rgba(197, 168, 128, 0) 0%,
+                rgba(197, 168, 128, 0.18) 50%,
+                rgba(197, 168, 128, 0) 100%);
+        background-size: 200% auto;
+        animation: shimmer 2s linear infinite;
+    }
+
+    /* Transition utilities */
+    .transition-smooth {
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+}

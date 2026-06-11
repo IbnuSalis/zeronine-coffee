@@ -1,0 +1,7 @@
+*
+!.gitignore
+!menus/
+!menus/*.jpg
+!menus/*.jpeg
+!menus/*.png
+!menus/*.webp

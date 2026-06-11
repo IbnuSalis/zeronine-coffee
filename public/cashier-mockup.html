@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kasir — Zero Nine Coffee POS</title>
+<style>
+  /* ── CSS Variables ── */
+  :root {
+    --color-background-primary: #ffffff;
+    --color-background-secondary: #f5f5f5;
+    --color-background-tertiary: #ebebeb;
+    --color-background-card: #ffffff;
+    --color-text-primary: #111111;
+    --color-text-secondary: #555555;
+    --color-text-tertiary: #888888;
+    --color-border-primary: #d0d0d0;
+    --color-border-tertiary: #e0e0e0;
+    --color-topbar-bg: #1a1a1a;
+    --color-topbar-text: #f0f0f0;
+    --color-topbar-sub: #888888;
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-background-primary: #111111;
+      --color-background-secondary: #1c1c1c;
+      --color-background-tertiary: #252525;
+      --color-background-card: #1e1e1e;
+      --color-text-primary: #f0f0f0;
+      --color-text-secondary: #aaaaaa;
+      --color-text-tertiary: #666666;
+      --color-border-primary: #333333;
+      --color-border-tertiary: #2a2a2a;
+      --color-topbar-bg: #0d0d0d;
+      --color-topbar-text: #f0f0f0;
+      --color-topbar-sub: #666666;
+    }
+  }
+
+  /* ── Reset ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+    min-height: 100vh;
+  }
+
+  /* ── Topbar ── */
+  .topbar {
+    background: var(--color-topbar-bg);
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 10px; }
+  .topbar-logo {
+    width: 32px; height: 32px;
+    background: #b8860b;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 900; font-size: 11px;
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+  }
+  .topbar-outlet { color: var(--color-topbar-text); font-size: 13px; font-weight: 700; }
+  .topbar-role   { color: var(--color-topbar-sub); font-size: 11px; margin-top: 1px; }
+  .topbar-right  { display: flex; align-items: center; gap: 20px; }
+  .topbar-kasir  { text-align: right; }
+  .topbar-kasir-name { color: var(--color-topbar-text); font-size: 12px; font-weight: 600; }
+  .topbar-kasir-label{ color: var(--color-topbar-sub); font-size: 10px; }
+  .topbar-clock  {
+    color: #b8860b; font-size: 15px; font-weight: 700;
+    font-variant-numeric: tabular-nums; min-width: 56px; text-align: right;
+  }
+  .topbar-logout {
+    color: #888; font-size: 11px; cursor: pointer;
+    background: none; border: 0.5px solid #333;
+    padding: 4px 10px; border-radius: var(--border-radius-sm);
+    transition: color .15s;
+  }
+  .topbar-logout:hover { color: #e87070; border-color: #e87070; }
+
+  /* ── Main Content ── */
+  .main { max-width: 1100px; margin: 0 auto; padding: 16px 16px 40px; }
+
+  /* ── Metric Bar ── */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .metric-card {
+    background: var(--color-background-card);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .metric-label { font-size: 11px; color: var(--color-text-tertiary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .metric-value { font-size: 22px; font-weight: 800; color: var(--color-text-primary); }
+  .metric-value.orange { color: #e07b00; }
+  .metric-value.green  { color: #1D9E75; }
+  .metric-value.gold   { color: #b8860b; font-size: 18px; }
+
+  /* ── Filter Bar ── */
+  .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .filter-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 12px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; cursor: pointer;
+    border: 0.5px solid var(--color-border-tertiary);
+    background: var(--color-background-card);
+    color: var(--color-text-secondary);
+    transition: all .15s;
+    user-select: none;
+  }
+  .filter-chip:hover { border-color: var(--color-border-primary); color: var(--color-text-primary); }
+  .filter-chip.active {
+    background: var(--color-text-primary); color: var(--color-background-primary);
+    border-color: var(--color-text-primary);
+  }
+  .chip-badge {
+    background: #1D9E75; color: #fff;
+    border-radius: 10px; padding: 0 6px;
+    font-size: 10px; font-weight: 700; line-height: 16px;
+  }
+  .filter-chip.active .chip-badge { background: #0F6E56; }
+
+  /* ── Order Grid ── */
+  .order-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  @media (max-width: 640px) { .order-grid { grid-template-columns: 1fr; } }
+
+  /* ── Order Card ── */
+  .order-card {
+    background: var(--color-background-card);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .order-card.priority-ready {
+    border: 2px solid #1D9E75;
+  }
+
+  /* Card Header */
+  .card-header {
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    background: var(--color-background-secondary);
+    gap: 8px;
+  }
+  .priority-ready .card-header { background: #E1F5EE; border-bottom-color: #c2e8d9; }
+  .card-header-left  { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+  .card-header-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+  .order-num { font-size: 12px; font-weight: 800; color: var(--color-text-primary); }
+
+  /* Type badges */
+  .badge-type {
+    font-size: 10px; font-weight: 700; padding: 2px 8px;
+    border-radius: 20px; white-space: nowrap;
+  }
+  .badge-delivery   { background: #dbeafe; color: #1e40af; }
+  .badge-takeaway   { background: #ede9fe; color: #5b21b6; }
+  .badge-dine       { background: #e5e7eb; color: #374151; }
+
+  /* Priority pill */
+  .badge-priority {
+    font-size: 10px; font-weight: 700;
+    background: #0F6E56; color: #fff;
+    padding: 2px 8px; border-radius: 20px;
+  }
+
+  /* Status dot + text */
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .dot-pending    { background: #BA7517; }
+  .dot-processing { background: #185fa5; }
+  .dot-ready      { background: #3b6d11; }
+  .status-text { font-size: 11px; font-weight: 600; color: var(--color-text-secondary); }
+
+  .card-time { font-size: 11px; color: var(--color-text-tertiary); }
+
+  /* Card Body */
+  .card-body { padding: 12px 14px; flex: 1; }
+  .customer-name {
+    font-size: 11px; color: var(--color-text-tertiary);
+    font-weight: 600; margin-bottom: 8px;
+  }
+  .customer-name span { color: var(--color-text-primary); font-weight: 700; }
+
+  .item-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 8px; }
+  .item-row  { display: flex; justify-content: space-between; align-items: start; gap: 8px; }
+  .item-name { font-size: 12px; color: var(--color-text-primary); line-height: 1.4; }
+  .item-qty  { font-size: 11px; color: var(--color-text-tertiary); margin-top: 1px; }
+  .item-price{ font-size: 12px; color: var(--color-text-secondary); flex-shrink: 0; }
+
+  .breakdown {
+    padding-top: 8px;
+    border-top: 0.5px solid var(--color-border-tertiary);
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .breakdown-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--color-text-tertiary); }
+  .breakdown-row.fee { color: var(--color-text-secondary); }
+
+  /* Card Footer */
+  .card-footer {
+    padding: 10px 14px;
+    border-top: 0.5px solid var(--color-border-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--color-background-secondary);
+  }
+  .priority-ready .card-footer { background: #f0fbf6; border-top-color: #c2e8d9; }
+
+  .footer-total-label { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 2px; }
+  .footer-total-amount { font-size: 15px; font-weight: 800; color: var(--color-text-primary); }
+
+  .footer-actions { display: flex; gap: 6px; align-items: center; }
+
+  .btn-pay {
+    font-size: 12px; font-weight: 700;
+    padding: 7px 16px; border-radius: var(--border-radius-sm);
+    border: none; cursor: pointer;
+    background: var(--color-text-primary); color: var(--color-background-primary);
+    transition: opacity .15s;
+  }
+  .btn-pay:hover { opacity: .8; }
+  .btn-pay.green { background: #0F6E56; color: #fff; }
+  .btn-pay.disabled { background: var(--color-background-tertiary); color: var(--color-text-tertiary); cursor: default; }
+  .btn-pay.disabled:hover { opacity: 1; }
+
+  .btn-icon {
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    border: 0.5px solid var(--color-border-primary);
+    border-radius: var(--border-radius-sm);
+    background: var(--color-background-card);
+    cursor: pointer; font-size: 14px;
+    color: var(--color-text-secondary);
+    transition: background .15s;
+  }
+  .btn-icon:hover { background: var(--color-background-tertiary); }
+
+  /* ── Divider label ── */
+  .section-divider {
+    font-size: 10px; font-weight: 700; color: var(--color-text-tertiary);
+    text-transform: uppercase; letter-spacing: 1px;
+    padding: 6px 0 8px;
+    grid-column: 1 / -1;
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Topbar ── -->
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">09</div>
+    <div>
+      <div class="topbar-outlet">Zero Nine Coffee Shop</div>
+      <div class="topbar-role">Outlet Utama · POS Kasir</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-kasir">
+      <div class="topbar-kasir-name">Septiana D.</div>
+      <div class="topbar-kasir-label">Kasir</div>
+    </div>
+    <div class="topbar-clock" id="clock">--:--:--</div>
+    <button class="topbar-logout" onclick="alert('Logout')">Keluar</button>
+  </div>
+</header>
+
+<!-- ── Main ── -->
+<main class="main">
+
+  <!-- Metrics -->
+  <div class="metrics">
+    <div class="metric-card">
+      <div class="metric-label">Antrian Aktif</div>
+      <div class="metric-value orange">4</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Selesai Hari Ini</div>
+      <div class="metric-value green">12</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Pendapatan Hari Ini</div>
+      <div class="metric-value gold">Rp 1.243.050</div>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <div class="filter-chip active" onclick="setFilter(this)">Semua</div>
+    <div class="filter-chip" onclick="setFilter(this)">
+      Ready <span class="chip-badge">1</span>
+    </div>
+    <div class="filter-chip" onclick="setFilter(this)">Pending</div>
+    <div class="filter-chip" onclick="setFilter(this)">Processing</div>
+    <div class="filter-chip" onclick="setFilter(this)">Delivery</div>
+    <div class="filter-chip" onclick="setFilter(this)">Takeaway</div>
+  </div>
+
+  <!-- Order Grid -->
+  <div class="order-grid">
+
+    <!-- Divider Ready -->
+    <div class="section-divider">● Siap Bayar — Prioritas</div>
+
+    <!-- Card #6 — READY (priority first) -->
+    <div class="order-card priority-ready">
+      <div class="card-header">
+        <div class="card-header-left">
+          <span class="order-num">#6</span>
+          <span class="badge-type badge-dine">Meja 2</span>
+          <span class="badge-priority">Siap bayar</span>
+        </div>
+        <div class="card-header-right">
+          <span class="status-dot dot-ready"></span>
+          <span class="status-text">Ready</span>
+          <span class="card-time">16:59</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="customer-name">Pelanggan: <span>Septiana D.</span></div>
+        <div class="item-list">
+          <div class="item-row">
+            <div>
+              <div class="item-name">Zero Nine Signature Blend</div>
+              <div class="item-qty">1 pcs</div>
+            </div>
+            <div class="item-price">Rp 45.000</div>
+          </div>
+        </div>
+        <div class="breakdown">
+          <div class="breakdown-row"><span>Subtotal</span><span>Rp 45.000</span></div>
+          <div class="breakdown-row fee"><span>PPN 10%</span><span>Rp 4.500</span></div>
+          <div class="breakdown-row fee"><span>Service 5%</span><span>Rp 2.250</span></div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div>
+          <div class="footer-total-label">Total</div>
+          <div class="footer-total-amount">Rp 51.750</div>
+        </div>
+        <div class="footer-actions">
+          <button class="btn-pay green">💳 Bayar</button>
+          <div class="btn-icon" title="Cetak Struk">🖨</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Divider Others -->
+    <div class="section-divider">○ Antrian Lainnya</div>
+
+    <!-- Card #9 — PENDING (Delivery) -->
+    <div class="order-card">
+      <div class="card-header">
+        <div class="card-header-left">
+          <span class="order-num">#9</span>
+          <span class="badge-type badge-delivery">Delivery</span>
+        </div>
+        <div class="card-header-right">
+          <span class="status-dot dot-pending"></span>
+          <span class="status-text">Pending</span>
+          <span class="card-time">17:43</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="customer-name">Pelanggan: <span>Septiana D.</span></div>
+        <div class="item-list">
+          <div class="item-row">
+            <div>
+              <div class="item-name">Caramel Cloud Latte</div>
+              <div class="item-qty">1 pcs</div>
+            </div>
+            <div class="item-price">Rp 52.000</div>
+          </div>
+        </div>
+        <div class="breakdown">
+          <div class="breakdown-row"><span>Subtotal</span><span>Rp 52.000</span></div>
+          <div class="breakdown-row fee"><span>Ongkir Delivery</span><span>Rp 0</span></div>
+          <div class="breakdown-row fee"><span>PPN 10%</span><span>Rp 5.200</span></div>
+          <div class="breakdown-row fee"><span>Service 5%</span><span>Rp 2.600</span></div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div>
+          <div class="footer-total-label">Total</div>
+          <div class="footer-total-amount">Rp 59.800</div>
+        </div>
+        <div class="footer-actions">
+          <button class="btn-pay disabled" disabled>Menunggu</button>
+          <div class="btn-icon" title="Cetak Struk">🖨</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card #8 — PENDING (Delivery) -->
+    <div class="order-card">
+      <div class="card-header">
+        <div class="card-header-left">
+          <span class="order-num">#8</span>
+          <span class="badge-type badge-delivery">Delivery</span>
+        </div>
+        <div class="card-header-right">
+          <span class="status-dot dot-pending"></span>
+          <span class="status-text">Pending</span>
+          <span class="card-time">17:07</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="customer-name">Pelanggan: <span>Ahmad R.</span></div>
+        <div class="item-list">
+          <div class="item-row">
+            <div>
+              <div class="item-name">Caramel Cloud Latte</div>
+              <div class="item-qty">1 pcs</div>
+            </div>
+            <div class="item-price">Rp 52.000</div>
+          </div>
+        </div>
+        <div class="breakdown">
+          <div class="breakdown-row"><span>Subtotal</span><span>Rp 52.000</span></div>
+          <div class="breakdown-row fee"><span>Ongkir Delivery</span><span>Rp 0</span></div>
+          <div class="breakdown-row fee"><span>PPN 10%</span><span>Rp 5.200</span></div>
+          <div class="breakdown-row fee"><span>Service 5%</span><span>Rp 2.600</span></div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div>
+          <div class="footer-total-label">Total</div>
+          <div class="footer-total-amount">Rp 59.800</div>
+        </div>
+        <div class="footer-actions">
+          <button class="btn-pay disabled" disabled>Menunggu</button>
+          <div class="btn-icon" title="Cetak Struk">🖨</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card #7 — PROCESSING (Takeaway) -->
+    <div class="order-card">
+      <div class="card-header">
+        <div class="card-header-left">
+          <span class="order-num">#7</span>
+          <span class="badge-type badge-takeaway">Takeaway</span>
+        </div>
+        <div class="card-header-right">
+          <span class="status-dot dot-processing"></span>
+          <span class="status-text">Processing</span>
+          <span class="card-time">17:06</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="customer-name">Pelanggan: <span>Budi S.</span></div>
+        <div class="item-list">
+          <div class="item-row">
+            <div>
+              <div class="item-name">Avocado Toast Zero Nine</div>
+              <div class="item-qty">2 pcs</div>
+            </div>
+            <div class="item-price">Rp 150.000</div>
+          </div>
+        </div>
+        <div class="breakdown">
+          <div class="breakdown-row"><span>Subtotal</span><span>Rp 150.000</span></div>
+          <div class="breakdown-row fee"><span>PPN 10%</span><span>Rp 15.000</span></div>
+          <div class="breakdown-row fee"><span>Service 5%</span><span>Rp 7.500</span></div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div>
+          <div class="footer-total-label">Total</div>
+          <div class="footer-total-amount">Rp 172.500</div>
+        </div>
+        <div class="footer-actions">
+          <button class="btn-pay disabled" disabled>Diproses</button>
+          <div class="btn-icon" title="Cetak Struk">🖨</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /order-grid -->
+
+</main>
+
+<script>
+  // Live clock
+  function tick() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  // Filter chips (UI only)
+  function setFilter(el) {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+  }
+</script>
+</body>
+</html>
