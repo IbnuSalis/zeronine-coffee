@@ -7,6 +7,7 @@ use App\Models\MembershipTier;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
+use Spatie\Permission\Models\Role;
 
 class GoogleController extends Controller
 {
@@ -56,6 +57,7 @@ class GoogleController extends Controller
                 'loyalty_points' => 0,
             ]);
 
+            Role::findOrCreate('customer', 'web');
             $user->assignRole('customer');
         }
 

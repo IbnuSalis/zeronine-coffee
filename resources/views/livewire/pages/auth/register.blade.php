@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
+use Spatie\Permission\Models\Role;
 
 new #[Layout('layouts.guest')] class extends Component
 {
@@ -38,6 +39,7 @@ new #[Layout('layouts.guest')] class extends Component
             'is_active' => true,
         ]);
 
+        Role::findOrCreate('customer', 'web');
         $user->assignRole('customer');
 
         event(new Registered($user));
